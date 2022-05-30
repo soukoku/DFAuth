@@ -1,13 +1,10 @@
-﻿using IdentityModel;
-using IdentityModel.OidcClient;
+﻿using IdentityModel.OidcClient;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -258,7 +255,7 @@ namespace DF.Auth
                     ctx.Response.Headers["Content-Type"] = "text/html";
                     using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
                     {
-                        var content = HtmlTemplate.Generate("Docufree Sign-in Success", "You can close this window now.");
+                        var content = HtmlTemplate.Generate($"{HtmlTemplate.AppName} Sign-in Success", "You can close this window now.");
                         writer.Write(content);
                         writer.Flush();
                     }
@@ -282,7 +279,7 @@ namespace DF.Auth
                     ctx.Response.Headers["Content-Type"] = "text/html";
                     using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
                     {
-                        var content = HtmlTemplate.Generate("Docufree Sign-in Error", $"{errorCode} - {errorDescription}");
+                        var content = HtmlTemplate.Generate($"{HtmlTemplate.AppName} Sign-in Error", $"{errorCode} - {errorDescription}");
                         writer.Write(content);
                         writer.Flush();
                     }

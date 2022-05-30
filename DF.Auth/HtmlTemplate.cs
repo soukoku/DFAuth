@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-
-namespace DF.Auth
+﻿namespace DF.Auth
 {
     /// <summary>
     /// Template for displaying response handling result.
@@ -15,24 +12,14 @@ namespace DF.Auth
         public string? Content { get; set; }
 
         /// <summary>
+        /// Name of the app to display.
+        /// </summary>
+        public string AppName { get; set; } = "Docufree";
+
+        /// <summary>
         /// Default html content.
         /// </summary>
-        public string DefaultContent { get; } = GetResourceString("page.html");
-
-        private static string GetResourceString(string resourceName)
-        {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"DF.Auth.{resourceName}"))
-            {
-                if (stream == null) return "";
-                else
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
-            }
-        }
+        public static string DefaultContent { get; } = Resources.HtmlTemplate;
 
         internal string Generate(string title, string body)
         {
