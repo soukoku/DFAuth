@@ -40,6 +40,11 @@ namespace DF.Auth
         public event EventHandler<LoginResult>? LoginCompleted;
 
         /// <summary>
+        /// Gets the html template.
+        /// </summary>
+        public HtmlTemplate HtmlTemplate { get; } = new HtmlTemplate();
+
+        /// <summary>
         /// Constructor. The parameters needs to match the registered redirect uri in DF.
         /// The server host is always localhost.
         /// </summary>
@@ -250,10 +255,11 @@ namespace DF.Auth
                 try
                 {
                     ctx.Response.StatusCode = (int)HttpStatusCode.OK;
-                    ctx.Response.Headers["ContentType"] = "text/html";
+                    ctx.Response.Headers["Content-Type"] = "text/html";
                     using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
                     {
-                        writer.Write("Success. You can close this window now.");
+                        var content = HtmlTemplate.Generate("Docufree Sign-in Success", "You can close this window now.");
+                        writer.Write(content);
                         writer.Flush();
                     }
                 }
@@ -273,10 +279,11 @@ namespace DF.Auth
                 try
                 {
                     ctx.Response.StatusCode = (int)httpCode;
-                    ctx.Response.Headers["ContentType"] = "text/html";
+                    ctx.Response.Headers["Content-Type"] = "text/html";
                     using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
                     {
-                        writer.Write($"Error ({errorCode}). {errorDescription}");
+                        var content = HtmlTemplate.Generate("Docufree Sign-in Error", $"{errorCode} - {errorDescription}");
+                        writer.Write(content);
                         writer.Flush();
                     }
                 }
