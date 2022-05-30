@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DFAuth
+namespace DF.Auth
 {
     /// <summary>
     /// Handles DF login for a desktop app. Must be used as a singleton.

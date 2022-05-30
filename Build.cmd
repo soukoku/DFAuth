@@ -1,1 +1,1 @@
-dotnet pack -c Release /p:ContinuousIntegrationBuild=true DFAuth\DFAuth.csproj
+dotnet pack -c Release /p:ContinuousIntegrationBuild=true DF.Auth/DF.Auth.csproj

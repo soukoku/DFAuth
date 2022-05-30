@@ -12,6 +12,7 @@
 	  <Copyright>2022 Docufree Corporation</Copyright>
 	  <Authors>Docufree Corporation</Authors>
 	  <VersionSuffix>alpha</VersionSuffix>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>

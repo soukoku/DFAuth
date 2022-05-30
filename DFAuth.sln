@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFAuth", "DFAuth\DFAuth.csproj", "{AB0F0777-77D6-44B0-B6DB-A3F54A6D852D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DF.Auth", "DF.Auth\DF.Auth.csproj", "{275623B5-783C-4E48-BDB4-5701EE901E28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB0F0777-77D6-44B0-B6DB-A3F54A6D852D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB0F0777-77D6-44B0-B6DB-A3F54A6D852D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB0F0777-77D6-44B0-B6DB-A3F54A6D852D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB0F0777-77D6-44B0-B6DB-A3F54A6D852D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{275623B5-783C-4E48-BDB4-5701EE901E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{275623B5-783C-4E48-BDB4-5701EE901E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{275623B5-783C-4E48-BDB4-5701EE901E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{275623B5-783C-4E48-BDB4-5701EE901E28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
