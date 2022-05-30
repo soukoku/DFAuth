@@ -52,6 +52,7 @@ namespace SampleApp
                     _config["clientSecret"],
                     handlerPath: boxPath.Text,
                     localPort: int.Parse(boxPort.Text));
+                _handler.HtmlTemplate.AppName = "Sample App";
                 _handler.LoginCompleted += (s, result) =>
                 {
                     Dispatcher.Invoke(() =>
