@@ -1,2 +1,2 @@
-# DFAuth
-Provides authentication lib for use in apps registered with Docufree.
+# DF.Auth
+Provides authentication routine for use in client-side apps registered with Docufree.
