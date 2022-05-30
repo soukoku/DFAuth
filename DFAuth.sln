@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32519.379
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DF.Auth", "DF.Auth\DF.Auth.csproj", "{275623B5-783C-4E48-BDB4-5701EE901E28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{C9692323-E2C0-464F-80EB-0197E1E7D563}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{275623B5-783C-4E48-BDB4-5701EE901E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{275623B5-783C-4E48-BDB4-5701EE901E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{275623B5-783C-4E48-BDB4-5701EE901E28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9692323-E2C0-464F-80EB-0197E1E7D563}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9692323-E2C0-464F-80EB-0197E1E7D563}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9692323-E2C0-464F-80EB-0197E1E7D563}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9692323-E2C0-464F-80EB-0197E1E7D563}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,11 +7,11 @@
 	  <NeutralLanguage>en-US</NeutralLanguage>
 	  <LangVersion>8</LangVersion>
 	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
-	  <FileVersion>1.0.0.0</FileVersion>
+	  <FileVersion>1.0.1.0</FileVersion>
+	  <Version>$(FileVersion)-alpha</Version>
 	  <Description>Provides authentication lib for use in apps registered with Docufree.</Description>
 	  <Copyright>2022 Docufree Corporation</Copyright>
 	  <Authors>Docufree Corporation</Authors>
-	  <VersionSuffix>alpha</VersionSuffix>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <PublishRepositoryUrl>true</PublishRepositoryUrl>

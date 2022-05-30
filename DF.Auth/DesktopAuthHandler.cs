@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,14 +20,17 @@ namespace DF.Auth
     {
         readonly ConcurrentDictionary<string, AuthorizeState> _pendingStates
             = new ConcurrentDictionary<string, AuthorizeState>();
-        readonly ConcurrentDictionary<string, OidcClient> _knownClients
-            = new ConcurrentDictionary<string, OidcClient>();
         readonly string _redirectUrl;
         readonly HttpListener _host;
-        private bool _disposed;
+        readonly string _saasServer;
+        readonly string _clientId;
+        readonly string _scope;
+        readonly OidcClient _oidc;
+        bool _disposed;
 
         /// <summary>
-        /// TODO: to be used.
+        /// When <code>true</code> allows accepting responses not initiated from this handler.
+        /// This is insecure and should only be used for testing.
         /// </summary>
         public bool AllowUnsolicited { get; set; }
 
@@ -39,10 +43,21 @@ namespace DF.Auth
         /// Constructor. The parameters needs to match the registered redirect uri in DF.
         /// The server host is always localhost.
         /// </summary>
+        /// <param name="server">The host name of the DF /authen site.</param>
+        /// <param name="clientId">The registered app id in DF.</param>
+        /// <param name="clientSecret">Secret value of the registered app.</param>
+        /// <param name="scope">Scopes to be requested.</param>
         /// <param name="handlerPath">Path of the redirect url, starts with '/'</param>
         /// <param name="localPort">Port of the local http listener.</param>
-        public DesktopAuthHandler(string handlerPath = "/signin-oidc", int localPort = 18989)
+        public DesktopAuthHandler(string server,
+            string clientId,
+            string clientSecret,
+            string scope = "openid profile roles df_api df_legacy_api offline_access",
+            string handlerPath = "/signin-oidc/", int localPort = 18989)
         {
+            _saasServer = server;
+            _clientId = clientId;
+            _scope = scope;
             _redirectUrl = $"http://localhost:{localPort}{handlerPath}";
             _host = new HttpListener();
             _host.Prefixes.Add(_redirectUrl);
@@ -60,39 +75,31 @@ namespace DF.Auth
                     catch { }
                 }
             });
+
+            var options = new OidcClientOptions
+            {
+                Authority = $"https://{_saasServer}/authen/identity/",
+                ClientId = _clientId,
+                ClientSecret = clientSecret,
+                RedirectUri = _redirectUrl,
+                Scope = _scope,
+            };
+
+            _oidc = new OidcClient(options);
         }
 
         /// <summary>
         /// Starts an interactive user login.
         /// </summary>
-        /// <param name="server">The host name of the DF /authen site.</param>
-        /// <param name="clientId">The registered app id in DF.</param>
-        /// <param name="scope">Scopes to be requested.</param>
         /// <param name="initialClient">Optional initial client code.</param>
         /// <param name="initialAccount">Optional initial user account (email).</param>
         /// <param name="alwaysPrompt">Optional flag to always show login prompt.</param>
         /// <returns></returns>
         /// <exception cref="ObjectDisposedException"></exception>
-        public async Task InteractiveLoginAsync(string server,
-            string clientId,
-            string scope = "openid profile roles df_api df_legacy_api offline_access",
+        public async Task InteractiveLoginAsync(
             string initialClient = "", string initialAccount = "", bool alwaysPrompt = false)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(DesktopAuthHandler));
-
-            var oidcKey = $"{server}-{clientId}-{scope}";
-            var oidc = _knownClients.GetOrAdd(oidcKey, _ =>
-            {
-                var options = new OidcClientOptions
-                {
-                    Authority = $"https://{server}/authen/identity/",
-                    ClientId = clientId,
-                    RedirectUri = _redirectUrl,
-                    Scope = scope,
-                };
-
-                return new OidcClient(options);
-            });
 
             var extra = new IdentityModel.Client.Parameters();
             if (!string.IsNullOrEmpty(initialClient))
@@ -105,7 +112,7 @@ namespace DF.Auth
                 extra.Add("prompt", "login");
             }
 
-            var state = await oidc.PrepareLoginAsync(extra);
+            var state = await _oidc.PrepareLoginAsync(extra);
 
             _pendingStates.AddOrUpdate(state.State, state, (key, exist) =>
             {
@@ -191,40 +198,49 @@ namespace DF.Auth
             if (string.IsNullOrEmpty(value))
             {
                 RespondWithError(ctx, HttpStatusCode.BadRequest, "bad_request", "No data received.");
+                return;
             }
-            var resp = new IdentityModel.Client.AuthorizeResponse(value);
-            if (resp.IsError)
+            var authResp = new IdentityModel.Client.AuthorizeResponse(value);
+            if (authResp.IsError)
             {
-                RespondWithError(ctx, HttpStatusCode.BadRequest, resp.Error, resp.ErrorDescription);
+                RespondWithError(ctx, HttpStatusCode.BadRequest, authResp.Error, authResp.ErrorDescription);
+                return;
             }
-            if (_pendingStates.TryGetValue(resp.State, out AuthorizeState? authState))
+            else if (_pendingStates.TryRemove(authResp.State, out AuthorizeState? authState))
             {
-                var nonValidatedId = await new NoValidationIdentityTokenValidator().ValidateAsync(resp.IdentityToken, null);
-                var clientId = nonValidatedId.User.Claims.FirstOrDefault(c => c.Type == IdentityModel.JwtClaimTypes.Audience)?.Value;
-                var issuer = nonValidatedId.User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Issuer)?.Value;
-                if (issuer != null && clientId != null)
+                var result = await _oidc.ProcessResponseAsync(value, authState);
+                if (result.IsError)
                 {
-                    var server = new Uri(issuer).Host;
-                    var oidcKey = $"{server}-{clientId}-{resp.Scope}";
-                    if (_knownClients.TryGetValue(oidcKey, out var oidc))
-                    {
-                        var result = await oidc.ProcessResponseAsync(value, authState);
-                        if (result.IsError)
-                        {
-                            RespondWithError(ctx, HttpStatusCode.BadRequest, result.Error, result.ErrorDescription);
-                        }
-                        else
-                        {
-                            RespondWithSuccess(ctx, result);
-                        }
-                    }
+                    RespondWithError(ctx, HttpStatusCode.BadRequest, result.Error, result.ErrorDescription);
                 }
+                else
+                {
+                    RespondWithSuccess(ctx, result);
+                }
+                return;
             }
             else if (AllowUnsolicited)
             {
-                // TODO: unsolicited is insecure but it's what people want.
+                // essentially pretends the response is initiated from this handler
+
+                //var oidc = _knownClients.GetOrAdd(oidcKey, _ =>
+                //{
+                //    var options = new OidcClientOptions
+                //    {
+                //        Authority = $"https://{server}/authen/identity/",
+                //        ClientId = clientId,
+                //        RedirectUri = _redirectUrl,
+                //        Scope = authResp.Scope,
+                //    };
+
+                //    return new OidcClient(options);
+                //});
+
+                //authState = await oidc.PrepareLoginAsync();
+                //authResp.State = authState.State;
+                //authResp.SessionState = authState.
             }
-            RespondWithError(ctx, HttpStatusCode.BadRequest, "invalid_request", "This auth response cannot be verified.");
+            RespondWithError(ctx, HttpStatusCode.BadRequest, "bad_request", "This auth response cannot be verified.");
         }
 
         private void RespondWithSuccess(HttpListenerContext? ctx, LoginResult result)
