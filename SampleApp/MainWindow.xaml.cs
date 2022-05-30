@@ -24,6 +24,7 @@ namespace SampleApp
     {
         private IConfiguration _config;
         private DesktopAuthHandler? _handler;
+        AccessTokenRefresher? _refresher;
 
         public MainWindow()
         {
@@ -44,6 +45,8 @@ namespace SampleApp
             try
             {
                 _handler?.Dispose();
+                _refresher?.Stop();
+
                 _handler = new DF.Auth.DesktopAuthHandler(boxServer.Text,
                     boxClient.Text,
                     _config["clientSecret"],
@@ -70,9 +73,26 @@ namespace SampleApp
                                 boxResult.AppendText($"\t{claim.Type}: {claim.Value}\n");
                             }
                             boxResult.AppendText(Environment.NewLine);
+                            _refresher?.Start(result.RefreshToken, result.AccessToken, result.AccessTokenExpiration);
                         }
                     });
                 };
+                _refresher = _handler.GetTokenRefresher();
+                _refresher.RefreshFail += (s, err) =>
+                {
+                    boxResult.AppendText($"Failed to refresh token: {err}\n");
+                };
+                _refresher.RefreshSuccess += (s, e) =>
+                {
+                    var refresh = s as AccessTokenRefresher;
+                    if (refresh != null)
+                    {
+                        boxResult.AppendText($"Token renewal success!\n");
+                        boxResult.AppendText($"Access token: {refresh.AccessToken}\n");
+                        boxResult.AppendText($"Expires at: {refresh.AccessTokenExpiration}\n");
+                    }
+                };
+
                 _ = _handler.InteractiveLoginAsync(
                     initialClient: boxSite.Text,
                     initialAccount: boxUser.Text,

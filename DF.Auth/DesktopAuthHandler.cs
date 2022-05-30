@@ -1,4 +1,5 @@
-﻿using IdentityModel.OidcClient;
+﻿using IdentityModel.Client;
+using IdentityModel.OidcClient;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -40,6 +41,12 @@ namespace DF.Auth
         /// Gets the html template.
         /// </summary>
         public HtmlTemplate HtmlTemplate { get; } = new HtmlTemplate();
+
+        /// <summary>
+        /// Gets an access token refresher for tokens received through this handler.
+        /// </summary>
+        /// <returns></returns>
+        public AccessTokenRefresher GetTokenRefresher() => new AccessTokenRefresher(_oidc);
 
         /// <summary>
         /// Constructor. The parameters needs to match the registered redirect uri in DF.
@@ -224,7 +231,6 @@ namespace DF.Auth
             else if (AllowUnsolicited)
             {
                 // essentially pretends the response is initiated from this handler
-
                 //var oidc = _knownClients.GetOrAdd(oidcKey, _ =>
                 //{
                 //    var options = new OidcClientOptions
@@ -237,7 +243,6 @@ namespace DF.Auth
 
                 //    return new OidcClient(options);
                 //});
-
                 //authState = await oidc.PrepareLoginAsync();
                 //authResp.State = authState.State;
                 //authResp.SessionState = authState.

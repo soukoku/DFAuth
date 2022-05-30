@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-	  <Nullable>enable</Nullable>
-	  <OutputType>Library</OutputType>
-	  <NeutralLanguage>en-US</NeutralLanguage>
-	  <LangVersion>8</LangVersion>
-	  <AssemblyVersion>1.0.0.0</AssemblyVersion>
-	  <FileVersion>1.0.2.0</FileVersion>
-	  <Version>$(FileVersion)-alpha</Version>
-	  <Description>Provides authentication routine for use in client-side apps registered with Docufree.</Description>
-	  <Copyright>2022 Docufree Corporation</Copyright>
-	  <Authors>Docufree Corporation</Authors>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-	  <EmbedUntrackedSources>true</EmbedUntrackedSources>
-	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <!--added net6.0 only because debug doesn't work in netstandard2.0-->
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <LangVersion>8</LangVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <Version>$(FileVersion)-alpha</Version>
+    <Description>Provides authentication routine for use in client-side apps registered with Docufree.</Description>
+    <Copyright>2022 Docufree Corporation</Copyright>
+    <Authors>Docufree Corporation</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="IdentityModel.OidcClient" Version="5.0.0" />
   </ItemGroup>
 
