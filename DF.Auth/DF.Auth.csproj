@@ -13,8 +13,6 @@
 	  <Authors>Docufree Corporation</Authors>
 	  <VersionSuffix>alpha</VersionSuffix>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <PublishRepositoryUrl>true</PublishRepositoryUrl>
 	  <EmbedUntrackedSources>true</EmbedUntrackedSources>

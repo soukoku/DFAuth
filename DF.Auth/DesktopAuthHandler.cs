@@ -15,7 +15,7 @@ namespace DF.Auth
     /// <summary>
     /// Handles DF login for a desktop app. Must be used as a singleton.
     /// </summary>
-    public class DesktopAuthHandler
+    public class DesktopAuthHandler : IDisposable
     {
         readonly ConcurrentDictionary<string, AuthorizeState> _pendingStates
             = new ConcurrentDictionary<string, AuthorizeState>();
@@ -23,6 +23,7 @@ namespace DF.Auth
             = new ConcurrentDictionary<string, OidcClient>();
         readonly string _redirectUrl;
         readonly HttpListener _host;
+        private bool _disposed;
 
         /// <summary>
         /// TODO: to be used.
@@ -30,7 +31,7 @@ namespace DF.Auth
         public bool AllowUnsolicited { get; set; }
 
         /// <summary>
-        /// Event raised when login is successful.
+        /// Event raised when a login result becomes available. This can happen on a different thread.
         /// </summary>
         public event EventHandler<LoginResult>? LoginCompleted;
 
@@ -51,8 +52,12 @@ namespace DF.Auth
             {
                 while (_host.IsListening)
                 {
-                    var ctx = await _host.GetContextAsync();
-                    await HandleRequest(ctx);
+                    try
+                    {
+                        var ctx = await _host.GetContextAsync();
+                        await HandleHttpRequest(ctx);
+                    }
+                    catch { }
                 }
             });
         }
@@ -67,11 +72,14 @@ namespace DF.Auth
         /// <param name="initialAccount">Optional initial user account (email).</param>
         /// <param name="alwaysPrompt">Optional flag to always show login prompt.</param>
         /// <returns></returns>
+        /// <exception cref="ObjectDisposedException"></exception>
         public async Task InteractiveLoginAsync(string server,
             string clientId,
             string scope = "openid profile roles df_api df_legacy_api offline_access",
             string initialClient = "", string initialAccount = "", bool alwaysPrompt = false)
         {
+            if (_disposed) throw new ObjectDisposedException(nameof(DesktopAuthHandler));
+
             var oidcKey = $"{server}-{clientId}-{scope}";
             var oidc = _knownClients.GetOrAdd(oidcKey, _ =>
             {
@@ -137,11 +145,11 @@ namespace DF.Auth
         }
 
 
-        private async Task HandleRequest(HttpListenerContext ctx)
+        private async Task HandleHttpRequest(HttpListenerContext ctx)
         {
             if (ctx.Request.HttpMethod == "GET")
             {
-                await HandleLoginResultAsync(ctx.Request.Url?.Query, ctx);
+                await HandleLoginResponseAsync(ctx.Request.Url?.Query, ctx);
             }
             else if (ctx.Request.HttpMethod == "POST")
             {
@@ -154,7 +162,7 @@ namespace DF.Auth
                     using (var sr = new StreamReader(ctx.Request.InputStream, Encoding.UTF8))
                     {
                         var body = await sr.ReadToEndAsync();
-                        await HandleLoginResultAsync(body, ctx);
+                        await HandleLoginResponseAsync(body, ctx);
                     }
                 }
                 else
@@ -168,7 +176,17 @@ namespace DF.Auth
             }
         }
 
-        private async Task HandleLoginResultAsync(string? value, HttpListenerContext ctx)
+        /// <summary>
+        /// Attempt to handle login response received through non-http means.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public void HandleLoginResponse(string value)
+        {
+            _ = HandleLoginResponseAsync(value, null);
+        }
+
+        private async Task HandleLoginResponseAsync(string? value, HttpListenerContext? ctx)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -197,8 +215,7 @@ namespace DF.Auth
                         }
                         else
                         {
-                            RespondWithSuccess(ctx);
-                            LoginCompleted?.Invoke(this, result);
+                            RespondWithSuccess(ctx, result);
                         }
                     }
                 }
@@ -210,26 +227,76 @@ namespace DF.Auth
             RespondWithError(ctx, HttpStatusCode.BadRequest, "invalid_request", "This auth response cannot be verified.");
         }
 
-        private void RespondWithSuccess(HttpListenerContext ctx)
+        private void RespondWithSuccess(HttpListenerContext? ctx, LoginResult result)
         {
-            ctx.Response.StatusCode = (int)HttpStatusCode.OK;
-            ctx.Response.Headers["ContentType"] = "text/html";
-            using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
+            if (ctx != null)
             {
-                writer.Write("Success. You can close this window now.");
-                writer.Flush();
+                try
+                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.OK;
+                    ctx.Response.Headers["ContentType"] = "text/html";
+                    using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
+                    {
+                        writer.Write("Success. You can close this window now.");
+                        writer.Flush();
+                    }
+                }
+                catch { }
+            }
+            try
+            {
+                LoginCompleted?.Invoke(this, result);
+            }
+            catch { }
+        }
+
+        private void RespondWithError(HttpListenerContext? ctx, HttpStatusCode httpCode, string errorCode, string errorDescription)
+        {
+            if (ctx != null)
+            {
+                try
+                {
+                    ctx.Response.StatusCode = (int)httpCode;
+                    ctx.Response.Headers["ContentType"] = "text/html";
+                    using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
+                    {
+                        writer.Write($"Error ({errorCode}). {errorDescription}");
+                        writer.Flush();
+                    }
+                }
+                catch { }
+            }
+            try
+            {
+                LoginCompleted?.Invoke(this, new LoginResult(errorCode, errorDescription));
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Cleanup this handler.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    if (_host.IsListening) _host.Stop();
+                }
+                _disposed = true;
             }
         }
 
-        private void RespondWithError(HttpListenerContext ctx, HttpStatusCode httpCode, string errorCode, string errorDescription)
+        /// <summary>
+        /// Cleanup this handler.
+        /// </summary>
+        public void Dispose()
         {
-            ctx.Response.StatusCode = (int)httpCode;
-            ctx.Response.Headers["ContentType"] = "text/html";
-            using (var writer = new StreamWriter(ctx.Response.OutputStream, Encoding.UTF8))
-            {
-                writer.Write($"Error ({errorCode}). {errorDescription}");
-                writer.Flush();
-            }
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
