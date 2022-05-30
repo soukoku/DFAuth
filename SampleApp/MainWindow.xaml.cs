@@ -73,7 +73,10 @@ namespace SampleApp
                         }
                     });
                 };
-                _ = _handler.InteractiveLoginAsync();
+                _ = _handler.InteractiveLoginAsync(
+                    initialClient: boxSite.Text,
+                    initialAccount: boxUser.Text,
+                    alwaysPrompt: ckPrompt.IsChecked.GetValueOrDefault());
             }
             catch (Exception ex)
             {

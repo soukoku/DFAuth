@@ -16,6 +16,9 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -32,9 +35,17 @@
             <TextBox x:Name="boxPath" VerticalContentAlignment="Center">/signin-oidc</TextBox>
         </StackPanel>
 
-        <Button Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" x:Name="btnTest"
+        <Label Grid.Row="3" Grid.Column="0" FontWeight="SemiBold">Initial Site</Label>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="boxSite" VerticalContentAlignment="Center"></TextBox>
+        
+        <Label Grid.Row="4" Grid.Column="0" FontWeight="SemiBold">Initial User</Label>
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="boxUser" VerticalContentAlignment="Center"></TextBox>
+        
+        <CheckBox Grid.Row="5" Grid.Column="1" x:Name="ckPrompt">Always prompt</CheckBox>
+        
+        <Button Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" x:Name="btnTest"
                 Click="btnTest_Click">Test me</Button>
 
-        <TextBox Grid.Row="4" Grid.Column="1" x:Name="boxResult" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="boxResult" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
     </Grid>
 </Window>
