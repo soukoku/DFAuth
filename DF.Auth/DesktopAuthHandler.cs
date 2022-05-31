@@ -1,5 +1,4 @@
-﻿using IdentityModel.Client;
-using IdentityModel.OidcClient;
+﻿using IdentityModel.OidcClient;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -103,10 +102,12 @@ namespace DF.Auth
         /// <param name="initialClient">Optional initial client code.</param>
         /// <param name="initialAccount">Optional initial user account (email).</param>
         /// <param name="alwaysPrompt">Optional flag to always show login prompt.</param>
+        /// <param name="openBrowser">Routine to open a browser when receiving the url. If null will attempt to open system browser (only for desktop).</param>
         /// <returns></returns>
         /// <exception cref="ObjectDisposedException"></exception>
         public async Task InteractiveLoginAsync(
-            string initialClient = "", string initialAccount = "", bool alwaysPrompt = false)
+            string initialClient = "", string initialAccount = "", bool alwaysPrompt = false,
+            Action<string>? openBrowser = null)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(DesktopAuthHandler));
 
@@ -128,11 +129,24 @@ namespace DF.Auth
                 // should never happen
                 return state;
             });
-            OpenBrowser(state.StartUrl);
+            if (openBrowser != null)
+            {
+                openBrowser(state.StartUrl);
+            }
+            else
+            {
+                OpenDesktopBrowser(state.StartUrl);
+            }
         }
 
-        static void OpenBrowser(string url)
+        /// <summary>
+        /// Opens a url in the system browser (desktop only).
+        /// </summary>
+        /// <param name="url">Url to open.</param>
+        public static void OpenDesktopBrowser(string url)
         {
+            if (string.IsNullOrEmpty(url)) return;
+
             try
             {
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });

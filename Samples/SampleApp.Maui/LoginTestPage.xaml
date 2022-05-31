@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleApp.Maui.LoginTestPage"
+             Title="Login Tester">
+  <ContentPage.Resources>
+    <Style TargetType="Label">
+      <Setter Property="VerticalTextAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="Editor">
+      <Setter Property="VerticalOptions" Value="Center"/>
+      <Setter Property="VerticalTextAlignment" Value="Center"/>
+      <Setter Property="MinimumHeightRequest" Value="32"/>
+    </Style>
+  </ContentPage.Resources>
+  <Grid Margin="16" RowSpacing="4" ColumnSpacing="4">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0">Server</Label>
+    
+    <Editor Grid.Row="0" Grid.Column="1" x:Name="boxServer"></Editor>
+
+    <Label Grid.Row="1" Grid.Column="0">Client ID</Label>
+    <Editor Grid.Row="1" Grid.Column="1" x:Name="boxClient"></Editor>
+
+    <Label Grid.Row="2" Grid.Column="0">Redirect Url</Label>
+    <StackLayout Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HeightRequest="40">
+      <Label>http://localhost:</Label>
+      <Editor x:Name="boxPort"></Editor>
+      <Editor x:Name="boxPath"></Editor>
+    </StackLayout>
+
+    <Label Grid.Row="3" Grid.Column="0">Initial Site</Label>
+    <Editor Grid.Row="3" Grid.Column="1" x:Name="boxSite"></Editor>
+
+    <Label Grid.Row="4" Grid.Column="0">Initial User</Label>
+    <Editor Grid.Row="4" Grid.Column="1" x:Name="boxUser"></Editor>
+
+    <StackLayout Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
+      <CheckBox x:Name="ckPrompt" />
+      <Label>Always prompt</Label>
+    </StackLayout>
+    
+    <Button Grid.Row="6" Grid.Column="1" HorizontalOptions="Start" x:Name="btnTest"
+            Clicked="btnTest_Click" Text="Test me"></Button>
+
+    <Editor Grid.Row="7" Grid.Column="1" x:Name="boxResult" VerticalOptions="FillAndExpand" VerticalTextAlignment="Start"></Editor>
+  </Grid>
+</ContentPage>

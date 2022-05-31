@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{02EB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApp.Wpf", "Samples\SampleApp.Wpf\SampleApp.Wpf.csproj", "{D379C069-E2FA-4F4D-B1B9-613E07ED55F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp.Maui", "Samples\SampleApp.Maui\SampleApp.Maui.csproj", "{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,12 +30,19 @@ Global
 		{D379C069-E2FA-4F4D-B1B9-613E07ED55F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D379C069-E2FA-4F4D-B1B9-613E07ED55F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D379C069-E2FA-4F4D-B1B9-613E07ED55F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D379C069-E2FA-4F4D-B1B9-613E07ED55F9} = {02EB1922-849A-4D57-88A3-34B08C8A15AC}
+		{F4C54438-20E2-4BBD-BFD6-45FCFD5EBAC0} = {02EB1922-849A-4D57-88A3-34B08C8A15AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {20C36944-F958-42D3-AEB2-33C67F24757D}

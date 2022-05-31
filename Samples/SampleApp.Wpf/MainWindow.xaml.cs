@@ -30,6 +30,7 @@ namespace SampleApp.Wpf
         {
             InitializeComponent();
             _config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", true)
                 .AddUserSecrets<App>(true)
                 .Build();
@@ -52,7 +53,7 @@ namespace SampleApp.Wpf
                     _config["clientSecret"],
                     handlerPath: boxPath.Text,
                     localPort: int.Parse(boxPort.Text));
-                _handler.HtmlTemplate.AppName = "Sample App";
+                _handler.HtmlTemplate.AppName = "Login Tester (Wpf)";
                 _handler.LoginCompleted += (s, result) =>
                 {
                     Dispatcher.Invoke(() =>
@@ -101,7 +102,7 @@ namespace SampleApp.Wpf
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                boxResult.AppendText($"Catch {ex}\n");
             }
         }
     }
