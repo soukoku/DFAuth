@@ -103,6 +103,10 @@ namespace DF.Auth
                         success = true;
                         AccessToken = result.AccessToken;
                         AccessTokenExpiration = result.AccessTokenExpiration;
+                        if (!string.IsNullOrEmpty(result.RefreshToken))
+                        {
+                            _refreshToken = result.RefreshToken;
+                        }
                         RefreshSuccess?.Invoke(this, EventArgs.Empty);
                     }
                 }
