@@ -96,6 +96,14 @@ namespace DF.Auth
             _oidc = new OidcClient(options);
         }
 
+        //public async Task LogoutAsync()
+        //{
+        //    if (_oidc != null)
+        //    {
+        //        await _oidc.LogoutAsync(new LogoutRequest {  IdTokenHint = });
+        //    }
+        //}
+
         /// <summary>
         /// Starts an interactive user login.
         /// </summary>
